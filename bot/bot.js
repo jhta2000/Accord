@@ -4,6 +4,7 @@ const client = new Discord.Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_
 
 const {Octokit} = require("@octokit/core")
 const octokit = new Octokit({auth: ``})
+require("dotenv").config()
 
 const prefix = "*gb "
 
@@ -44,7 +45,13 @@ client.on("message", msg => {
       if(words.length < 4){
         msg.reply("try command *gb get owner repo")
       }else{
-        getPullRequests(words[2],words[3])
+        
+        const result = getPullRequests(words[2],words[3])
+        result.then(term =>{
+          console.log(`${term}`)
+          msg.reply(term)
+        })
+
       }
       
       
@@ -63,27 +70,50 @@ async function getPullRequests(owner,repo){
           repo: repo
         })
     if(result.status === 200){
-        //repo, name
-      //repo , description
-      ////html_url
-      //number
-      //title
+        //head,repo, name
+      const name = result.data[0]["head"]["repo"]["name"]
+      //console.log(`${name}`)
+            //repo , description
+      const description = result.data[0]["head"]["repo"]["description"]
+      //console.log(`${description}`)
+      const repo = []
+      repo.push(name,description)
+      for(let i = 0; i < result.data.length; i ++){
+        ////html_url
+        const url = result.data[i]["html_url"]
+        //console.log(`${url}`)
+        //number
+        const num_pullRequest = result.data[i]["number"]
+        const pr_num = ("\n\nPull request #"+ num_pullRequest)
+        //console.log(`${num_pullRequest}`)
+        //title
+        const title_pullRequest = result.data[i]["title"]
+        //console.log(`${title_pullRequest}`)
+        //user, login
+        const posted_by = result.data[i]["user"]["login"]
+        //console.log(`${posted_by}`)
+        //"body"
+        const description_pullRequest = result.data[i]["body"]
+        //console.log(`${description_pullRequest}`)
+
+        //console.log(`${JSON.stringify(result.data,null,4)}`)
+        //console.log(`${result.status} is type: ${typeof result.status}`)
+        
+        repo.push(pr_num, url, title_pullRequest, posted_by,description_pullRequest)
+      }
       
-      //user, login
-      //"body"
-      console.log(`${result.status} is type: ${typeof result.status}`)
-      console.log(`${result.data[0]["user"]["login"]}`)
-      console.log(`${result.data[0]["head"]["repo"]["description"]}`)
+      //console.log(`${pullrequestList}`)
+      return repo.join("\n")
+      
     }else{
-      console.log(`Error code: ${result.status}`)
+      throw Error
     }
   }catch(err){
-    console.log(`${err}`)
+    console.log(`${err} `)
+    return 'An error occurred invalid Github User or Repository'
   }
   
 }
 
-
-const token = 'OTAwMTIzMTY4NzM4NTEyOTI3.YW8vBg.-gfow5tLVk48asfzLKe63V7jwi4'
-client.login(token)
+client.login(process.env.TOKEN)
 
