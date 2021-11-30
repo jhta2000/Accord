@@ -44,7 +44,7 @@ if (msg.author === client.user) {
       //add to the To Do List
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection(msg.author.id)
+    await DB.collection(msg.author + "To Do")
         .doc(result)
         .set({
         "To Do List": result,
@@ -59,7 +59,7 @@ if (msg.author === client.user) {
     }
     if (msg.content.toLowerCase().startsWith(prefix + "list")) {
     var stack = [];
-    await DB.collection(msg.author.id)
+    await DB.collection(msg.author + "To Do")
         .get()
         .then((list) => {
         var str = "To Do List: " + "\n";
@@ -77,7 +77,7 @@ if (msg.author === client.user) {
     if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection(msg.author.id).doc(result);
+    const docRef = DB.collection(msg.author + "To Do").doc(result);
     await docRef.get().then((doc) => {
         if (doc.exists) {
         docRef
@@ -94,7 +94,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection("Goals").doc(result).set({
+    await DB.collection(msg.author + "Goals").doc(result).set({
         "Goal Description": " ",
         "Expected Goal Complete Date": " ",
         "Goal Author": msg.author.username,
@@ -109,7 +109,7 @@ if (msg.author === client.user) {
     msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "ls")){
-    await DB.collection("Goals").get().then((goals) => {
+    await DB.collection(msg.author + "Goals").get().then((goals) => {
         var str = '```Current List of Goals:' + "\n\n";
         var numbering = 1;
         goals.forEach((doc) => {
@@ -129,7 +129,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Goals").doc(result);
+    const docRef = DB.collection(msg.author + "Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
         msg.channel.send(objToStringCodeBlock(doc.data()));
@@ -145,7 +145,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "rmgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Goals").doc(result);
+    const docRef = DB.collection(msg.author + "Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
         docRef.delete().then(() => {
@@ -192,7 +192,78 @@ if (msg.author === client.user) {
         
         
     }
+        }
+        
+    if (msg.content.toLowerCase().startsWith(prefix + "request")) {
+      //add to the Help Request List shared by everyone
+    var original = msg.content;
+    var result = original.substr(original.indexOf(" ") + 1);
+    await DB.collection("Support Ticket")
+        .doc(result)
+        .set({
+        "Help Requested": result,
+        User: msg.author.username,
+        })
+        .then(() => {
+        msg.reply("Support Request Item Added");
+        })
+        .catch((error) => {
+        msg.reply("Error");
+        });
     }
+
+    if (msg.content.toLowerCase().startsWith(prefix + "requestlist")) {
+    var stack = [];
+    await DB.collection("Support Ticket")
+        .get()
+        .then((list) => {
+        var str = "Support Request List: " + "\n";
+        var count = 1;
+        list.forEach((doc) => {
+            stack.push(doc.id);
+        });
+        while (stack.length > 0) {
+            str += count + ") " + stack.pop() + "\n";
+            count += 1;
+        }
+        msg.reply(str);
+        });
+    }
+
+if(msg.content.toLowerCase().startsWith(prefix + "requestinfo")){
+    var original = msg.content;
+    var result = original.substr(original.indexOf(" ") + 1);
+    const docRef = DB.collection("Support Ticket").doc(result);
+    await docRef.get().then((doc) => {
+        if(doc.exists){
+        msg.channel.send(objToStringCodeBlock(doc.data()));
+        }
+        else{
+        msg.channel.send("No Support Ticket Found.")
+        }
+    })
+    .catch((error) => {
+        console.log("Error getting document:", error);
+    });
+}
+    if (msg.content.toLowerCase().startsWith(prefix + "deleterequest")) {
+    var original = msg.content;
+    var result = original.substr(original.indexOf(" ") + 1);
+    const docRef = DB.collection("Support Ticket").doc(result);
+    await docRef.get().then((doc) => {
+        if (doc.exists) {
+        docRef
+            .delete()
+            .then(() => {
+            msg.reply("Delete the Help Request!");
+            })
+            .catch((error) => {
+            msg.reply("Error");
+            });
+        }
+    });
+    }       
+        
 } catch (err) {
     msg.reply(err);
 }
