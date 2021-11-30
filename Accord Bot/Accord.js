@@ -36,7 +36,7 @@ if (msg.author === client.user) {
             ".ls: View your List of Goals! \n" +
             ".viewgoal: View a Specific Goal and Learn more about it! \n" +
             ".rmgoal: Remove a Goal! \n" +
-            ".github: Learn about this GitHub Commands \n" +
+            ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n")
     }
