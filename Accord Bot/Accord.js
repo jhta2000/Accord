@@ -26,7 +26,20 @@ client.on("message", async (msg) => {
 if (msg.author === client.user) {
     return;
 }
-try {
+    try {
+    if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
+      //list of commands
+        msg.reply(".todo: Add to your personal To Do List! \n" +
+            " .list: View your personal To Do List! \n" +
+            " .remove: Remove one of your To Do List Duties! \n" +
+            " .creategoal: Create your own Personal Goal! \n" +
+            ".ls: View your List of Goals! \n" +
+            ".viewgoal: View a Specific Goal and Learn more about it! \n" +
+            ".rmgoal: Remove a Goal! \n" +
+            ".github: Learn about this GitHub Commands \n" +
+            ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n")
+    }
     if (msg.content.toLowerCase().startsWith(prefix + "todo")) {
       //add to the To Do List
     var original = msg.content;
@@ -319,5 +332,5 @@ for(var k in object){
 }
 return str + "```";
 }
-const token = "OTE1MDk2ODEzNzE4MTEwMjI4.YaWoUg.DFTyNlqB3eR1VZHYIDzyM0Xsoqw";
+const token = "";
 client.login(token);
