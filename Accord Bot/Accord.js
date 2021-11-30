@@ -44,7 +44,7 @@ if (msg.author === client.user) {
       //add to the To Do List
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection(msg.author + "To Do")
+    await DB.collection(msg.author.username + " To Do")
         .doc(result)
         .set({
         "To Do List": result,
@@ -59,7 +59,7 @@ if (msg.author === client.user) {
     }
     if (msg.content.toLowerCase().startsWith(prefix + "list")) {
     var stack = [];
-    await DB.collection(msg.author + "To Do")
+    await DB.collection(msg.author.username + " To Do")
         .get()
         .then((list) => {
         var str = "To Do List: " + "\n";
@@ -77,7 +77,7 @@ if (msg.author === client.user) {
     if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection(msg.author + "To Do").doc(result);
+    const docRef = DB.collection(msg.author.username + " To Do").doc(result);
     await docRef.get().then((doc) => {
         if (doc.exists) {
         docRef
@@ -94,7 +94,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection(msg.author + "Goals").doc(result).set({
+    await DB.collection(msg.author.username + " Goals").doc(result).set({
         "Goal Description": " ",
         "Expected Goal Complete Date": " ",
         "Goal Author": msg.author.username,
@@ -109,7 +109,7 @@ if (msg.author === client.user) {
     msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "ls")){
-    await DB.collection(msg.author + "Goals").get().then((goals) => {
+    await DB.collection(msg.author.username + " Goals").get().then((goals) => {
         var str = '```Current List of Goals:' + "\n\n";
         var numbering = 1;
         goals.forEach((doc) => {
@@ -129,7 +129,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection(msg.author + "Goals").doc(result);
+    const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
         msg.channel.send(objToStringCodeBlock(doc.data()));
@@ -145,7 +145,7 @@ if (msg.author === client.user) {
     if(msg.content.toLowerCase().startsWith(prefix + "rmgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection(msg.author + "Goals").doc(result);
+    const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
         docRef.delete().then(() => {
@@ -403,5 +403,5 @@ for(var k in object){
 }
 return str + "```";
 }
-const token = "";
+const token = "OTE1MDk2ODEzNzE4MTEwMjI4.YaWoUg.m80qGXg3PBSvxyUaj34IMR3Wgv8";
 client.login(token);
