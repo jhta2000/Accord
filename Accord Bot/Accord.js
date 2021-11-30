@@ -212,7 +212,7 @@ if (msg.author === client.user) {
         });
     }
 
-    if (msg.content.toLowerCase().startsWith(prefix + "requestlist")) {
+    if (msg.content.toLowerCase().startsWith(prefix + "reqlist")) {
     var stack = [];
     await DB.collection("Support Ticket")
         .get()
@@ -230,7 +230,7 @@ if (msg.author === client.user) {
         });
     }
 
-if(msg.content.toLowerCase().startsWith(prefix + "requestinfo")){
+if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
@@ -246,7 +246,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "requestinfo")){
         console.log("Error getting document:", error);
     });
 }
-    if (msg.content.toLowerCase().startsWith(prefix + "deleterequest")) {
+    if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
@@ -255,7 +255,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "requestinfo")){
         docRef
             .delete()
             .then(() => {
-            msg.reply("Delete the Help Request!");
+            msg.reply("Deleted the Help Request!");
             })
             .catch((error) => {
             msg.reply("Error");
@@ -403,5 +403,5 @@ for(var k in object){
 }
 return str + "```";
 }
-const token = "OTE1MDk2ODEzNzE4MTEwMjI4.YaWoUg.m80qGXg3PBSvxyUaj34IMR3Wgv8";
+const token = "";
 client.login(token);
