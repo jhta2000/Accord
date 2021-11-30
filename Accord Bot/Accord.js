@@ -30,9 +30,9 @@ if (msg.author === client.user) {
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
         msg.reply(".todo: Add to your personal To Do List! \n" +
-            " .list: View your personal To Do List! \n" +
-            " .remove: Remove one of your To Do List Duties! \n" +
-            " .creategoal: Create your own Personal Goal! \n" +
+            ".list: View your personal To Do List! \n" +
+            ".remove: Remove one of your To Do List Duties! \n" +
+            ".creategoal: Create your own Personal Goal! \n" +
             ".ls: View your List of Goals! \n" +
             ".viewgoal: View a Specific Goal and Learn more about it! \n" +
             ".rmgoal: Remove a Goal! \n" +
