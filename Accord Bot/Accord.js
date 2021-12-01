@@ -2,7 +2,6 @@ const Discord = require("discord.js");
 const client = new Discord.Client({
 intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS","GUILD_MEMBERS"],
 });
-const randomstring = require("randomstring");
 
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: `` });
@@ -28,9 +27,9 @@ if (msg.author === client.user) {
 }
     try {
     //bot will sometimes glitch out, enable this for debuggin purposes only
-    // if(msg.content.startsWith(prefix + "close")){
-    //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
-    // }
+    if(msg.content.startsWith(prefix + "close")){
+        msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+    }
     if(msg.content.toLowerCase().startsWith(prefix + "assign")){
         try{
             
@@ -462,5 +461,5 @@ for(var k in object){
 }
 return str + "```";
 }
-const token = "";
+const token = "OTAwMTIzMTY4NzM4NTEyOTI3.YW8vBg.5vQuy8lA2PanbDNI4hjqqHN20Ck";
 client.login(token);
