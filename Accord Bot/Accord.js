@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({
-intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS"],
+intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS","GUILD_MEMBERS"],
 });
 const randomstring = require("randomstring");
 
@@ -22,11 +22,67 @@ client.on("ready", () => {
 console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("message", async (msg) => {
+client.on("messageCreate", async (msg) => {
 if (msg.author === client.user) {
     return;
 }
     try {
+    //bot will sometimes glitch out, enable this for debuggin purposes only
+    // if(msg.content.startsWith(prefix + "close")){
+    //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+    // }
+    if(msg.content.toLowerCase().startsWith(prefix + "assign")){
+        try{
+            
+            var message = msg.content;
+            var result = message.split(' ')
+            var role_input = result[2]
+            console.log(role_input)
+            let members = await msg.guild.members.fetch()
+            let roles = await msg.guild.roles.fetch()
+            roles.forEach(role=>{
+                if(String(role.name) === role_input){
+                    role_input = role
+                }
+            })
+            
+
+            let member = msg.mentions.members.first()
+            console.log(member.displayName)
+            
+            member.roles.add(role_input)
+            
+            
+            
+
+        }catch(e){
+            console.log(e)
+            msg.reply('failed to assign')
+        }
+    }
+    if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
+        try{
+            var message = msg.content;
+            var result = message.split(' ')
+            let input = {
+                data:{name: result[1],
+                    color: result[2]
+                }
+            }
+            console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
+            let rNew = await msg.guild.roles.create({
+                name: input.data.name,
+                color: input.data.color
+                }
+            )
+            msg.reply(`New role has been created for ${input.data.name} with color: ${input.data.color}`)  
+            
+            
+        }catch(e){
+            console.log(e)
+            msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+        }
+    }
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
         msg.reply(".todo: Add to your personal To Do List! \n" +
@@ -38,7 +94,9 @@ if (msg.author === client.user) {
             ".rmgoal: Remove a Goal! \n" +
             ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
-            ".github issues owner repo: Issues from your specific Owner and Repo! \n")
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
+            ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
+            ".assign @member role_name: adds a mentioned member to a specified team")
     }
     if (msg.content.toLowerCase().startsWith(prefix + "todo")) {
       //add to the To Do List
