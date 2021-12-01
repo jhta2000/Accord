@@ -1,1 +1,5 @@
 #List of classes that we think needs to be implemented
+
+bot class
+message class
+chat room class
