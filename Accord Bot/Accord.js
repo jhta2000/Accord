@@ -52,6 +52,7 @@ if (msg.author === client.user) {
             
             member.roles.add(role_input)
             
+            msg.reply(`role added`)
             
             
 
@@ -75,7 +76,7 @@ if (msg.author === client.user) {
                 color: input.data.color
                 }
             )
-            msg.reply(`New role has been created for ${input.data.name} with color: ${input.data.color}`)  
+            msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
             
             
         }catch(e){
