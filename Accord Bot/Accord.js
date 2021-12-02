@@ -195,7 +195,7 @@ const messagehandler = async (msg) => {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if(doc.exists){
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
@@ -204,7 +204,7 @@ const messagehandler = async (msg) => {
         var original = msg.content;
         var result = original.substr(original.indexOf(" ") + 1);
         const docRef = DB.collection(msg.author.username + " To Do").doc(result);
-        await docRef.get().then((doc) => {
+         docRef.get().then((doc) => {
             if (doc.exists) {
             docRef
                 .delete()
@@ -226,7 +226,7 @@ const messagehandler = async (msg) => {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
