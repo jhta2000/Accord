@@ -20,7 +20,7 @@ const logon = () => {
 client.on("ready", logon);
 
 
-const messagehandler = async (msg) => {
+const messageHandler = async (msg) => {
     if (msg.author === client.user) {
         return;
     }
@@ -511,7 +511,7 @@ try{
 
 }
 
-client.on("messageCreate", messagehandler)
+client.on("messageCreate", messageHandler)
 
 //This function converts an obect in JSON format to a string
 //Decided to make it a code block in discord so add the triple ```
@@ -525,4 +525,6 @@ function objToStr(object){
     return str + "```";
 }
 
+
+module.exports = messageHandler
 
