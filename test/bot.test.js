@@ -1,4 +1,4 @@
-const {messageHandler} = require("../Accord Bot/Accord.js")
+const messageHandler = require("../Accord Bot/Accord.js")
 
 
 describe("Message Handler", () => {
