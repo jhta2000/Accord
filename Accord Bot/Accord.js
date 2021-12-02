@@ -191,11 +191,12 @@ const messageHandler = async (msg) => {
     })
         msg.reply("Go Accomplish Them!")
     }
+
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    docRef.get().then((doc) => {
+    await docRef.get().then((doc) => {
         if(doc.exists){
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
@@ -228,7 +229,7 @@ const messageHandler = async (msg) => {
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     docRef.get().then((doc) => {
         if(doc.exists){
-        docRef.delete().then(() => {
+        await docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
             console.log("```yaml\nGoal has been successfully deleted! ```")
         })
@@ -294,6 +295,25 @@ const messageHandler = async (msg) => {
             console.error("Error writing doc: ", error)
         })
     }
+
+    if (msg.content.toLowerCase().startsWith(prefix + "reqlist")) {
+        var stack = [];
+        await DB.collection("Support Ticket")
+            .get()
+            .then((list) => {
+            var str = "Support Request List: " + "\n";
+            var count = 1;
+            list.forEach((doc) => {
+                stack.push(doc.id);
+            });
+            while (stack.length > 0) {
+                str += count + ") " + stack.pop() + "\n";
+                count += 1;
+            }
+                msg.reply(str);
+                msg.reply("What to do?");
+            });
+        }
 
     if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
         var original = msg.content;

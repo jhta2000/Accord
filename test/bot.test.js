@@ -17,12 +17,7 @@ describe("Message Handler", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-    it("it should send pong", async() =>{
-        message.content = ".ping";
-        await messageHandler(message);
-        expect(message.reply).toHaveBeenCalledWith("pong")
-        // if we are testing for channel send then replace with message.channel.send
-    })
+    
     it("should add to do list", async() =>{
         message.content = ".todo ooga";
         await messageHandler(message);
