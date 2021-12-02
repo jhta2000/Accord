@@ -1,3 +1,4 @@
+const { doc } = require("@firebase/firestore");
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: `` });
 var admin = require("firebase-admin");
@@ -25,6 +26,7 @@ const messageHandler = async (msg) => {
             ".list: View your personal To Do List! \n" +
             ".remove: Remove one of your To Do List Duties! \n" +
             ".creategoal: Create your own Personal Goal! \n" +
+            ".editgoaldesc: Edit a goal's description to your liking\n" +
             ".ls: View your List of Goals! \n" +
             ".viewgoal: View a Specific Goal and Learn more about it! \n" +
             ".rmgoal: Remove a Goal! \n" +
@@ -85,22 +87,22 @@ const messageHandler = async (msg) => {
     });
     }
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection(msg.author.username + " Goals").doc(result).set({
-        "Goal Description": " ",
-        "Expected Goal Complete Date": " ",
-        "Goal Author": msg.author.username,
-        "Goal Created": new Date(admin.firestore.Timestamp.now().seconds*1000).toLocaleDateString()//admin.firestore.Timestamp.fromDate(new Date())
-    })
-    .then(() => {
-        console.log("Document written")
-    })
-    .catch((error) => {
-        console.error("Error writing document: ", error)
-    })
-    msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
+        var original = msg.content;
+        var goalName = original.substr(original.indexOf(" ") + 1);
+        await DB.collection(msg.author.username + " Goals").doc(goalName).set({
+            "Goal Description": " ",
+            "Goal Author": msg.author.username,
+            "Goal Created": new Date(admin.firestore.Timestamp.now().seconds*1000).toLocaleDateString()//admin.firestore.Timestamp.fromDate(new Date())
+        })
+        .then(() => {
+            console.log("Document written")
+        })
+        .catch((error) => {
+            console.error("Error writing document: ", error)
+        })
+        msg.channel.send("```yaml\nGoal has been created. Type '.ls' to view a list of goals.```");
     }
+    
     if(msg.content.toLowerCase().startsWith(prefix + "ls")){
     await DB.collection(msg.author.username + " Goals").get().then((goals) => {
         var str = '```Current List of Goals:' + "\n\n";
@@ -118,6 +120,32 @@ const messageHandler = async (msg) => {
     .catch((error) => {
         console.error("Error writing doc: ", error)
     })
+    }
+    if(msg.content.toLowerCase().startsWith(prefix + "editgoaldesc")){
+        var original = msg.content;
+        var result = original.substr(original.indexOf(" ") + 1);
+        var resultSplit = result.split(" ");
+        if(resultSplit.length < 2){
+            msg.channel.send("```diff\n-ERROR! Please make sure you are entering in the correct format. '.editgoaldesc <goalname> <goal description>'. Note: Omit the <>.```")
+        }
+        else{
+            const docRef = DB.collection(msg.author.username + " Goals").doc(resultSplit[0]);
+            if(doc.exists){
+                await docRef.set({
+                    "Goal Description": result.substr(result.indexOf(" ") + 1),
+                }, {merge: true})
+                .then(() => {
+                    console.log("Document written")
+                    msg.channel.send("Goal description has successfully been updated. Please type '.viewgoal <goalname>' to view the updated goal. Note: remove the <>")
+                })
+                .catch((error) => {
+                    console.log("Error writing document: ", error)
+                })
+            }
+            else{
+                msg.channel.send("```diff\n-ERROR! Please make sure that a goal with the name specified exists.```")
+            }            
+        }
     }
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
@@ -442,10 +470,10 @@ try{
 //This function converts an obect in JSON format to a string
 //Decided to make it a code block in discord so add the triple ```
 function objToStr(object){
-    var str = '```';
+    var str = "```";
     for(var k in object){
         if(object.hasOwnProperty(k)){
-            str += k+": " + object[k] + '\n'
+            str += k + ": " + object[k] + '\n'
         }
     }
     return str + "```";
