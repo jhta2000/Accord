@@ -5,7 +5,7 @@
   "description": "",
   "main": "Accord.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
