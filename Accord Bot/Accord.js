@@ -14,72 +14,80 @@ credential: admin.credential.cert(serviceAccount),
 
 const DB = admin.firestore();
 const prefix = ".";
-
-
-
-client.on("messageCreate", async (msg) => {
-if (msg.author === client.user) {
-    return;
+const logon = () => {
+    console.log(`Logged in as ${client.user.tag}!`);
 }
-    try {
-    //bot will sometimes glitch out, enable this for debuggin purposes only
-    if(msg.content.startsWith(prefix + "close")){
-        msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+client.on("ready", logon);
+
+
+const messagehandler = async (msg) => {
+    if (msg.author === client.user) {
+        return;
     }
-    if(msg.content.toLowerCase().startsWith(prefix + "assign")){
-        try{
-            
-            var message = msg.content;
-            var result = message.split(' ')
-            var role_input = result[2]
-            console.log(role_input)
-            let members = await msg.guild.members.fetch()
-            let roles = await msg.guild.roles.fetch()
-            roles.forEach(role=>{
-                if(String(role.name) === role_input){
-                    role_input = role
-                }
-            })
-            
-
-            let member = msg.mentions.members.first()
-            console.log(member.displayName)
-            
-            member.roles.add(role_input)
-            
-            msg.reply(`role added`)
-            
-            
-
-        }catch(e){
-            console.log(e)
-            msg.reply('failed to assign')
+        try {
+        //bot will sometimes glitch out, enable this for debuggin purposes only
+        if(msg.content.startsWith(prefix + "close")){
+            msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+            msg.channel.send(`Bot has been destroyed`)
         }
-    }
-    if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
-        try{
-            var message = msg.content;
-            var result = message.split(' ')
-            let input = {
-                data:{name: result[1],
-                    color: result[2]
-                }
+
+        //Fetches a single role and member to assign together
+
+        if(msg.content.toLowerCase().startsWith(prefix + "assign")){
+            try{
+                
+                var message = msg.content;
+                var result = message.split(' ')
+                var role_input = result[2]
+                console.log(role_input)
+                let members = await msg.guild.members.fetch()
+                let roles = await msg.guild.roles.fetch()
+                roles.forEach(role=>{
+                    if(String(role.name) === role_input){
+                        role_input = role
+                    }
+                })
+                
+    
+                let member = msg.mentions.members.first()
+                console.log(member.displayName)
+                
+                member.roles.add(role_input)
+                
+                msg.reply(`role added`)
+                
+                
+    
+            }catch(e){
+                console.log(e)
+                msg.reply('failed to assign')
             }
-            console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
-            let rNew = await msg.guild.roles.create({
-                name: input.data.name,
-                color: input.data.color
+        }
+        if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
+            try{
+                var message = msg.content;
+                var result = message.split(' ')
+                let input = {
+                    data:{name: result[1],
+                        color: result[2]
+                    }
                 }
-            )
-            msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
-            
-            
-        }catch(e){
-            console.log(e)
-            msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+                console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
+                let rNew = await msg.guild.roles.create({
+                    name: input.data.name,
+                    color: input.data.color
+                    }
+                )
+                msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
+                
+                
+            }catch(e){
+                console.log(e)
+                msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+            }
         }
 
-    }
+       
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
         msg.reply(".todo: Add to your personal To Do List! \n" +
@@ -192,8 +200,22 @@ if (msg.author === client.user) {
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
         }
-        else{
-        msg.channel.send("No document with that name found in the database.")
+        if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
+        var original = msg.content;
+        var result = original.substr(original.indexOf(" ") + 1);
+        const docRef = DB.collection(msg.author.username + " To Do").doc(result);
+        await docRef.get().then((doc) => {
+            if (doc.exists) {
+            docRef
+                .delete()
+                .then(() => {
+                msg.reply("Deleted");
+                })
+                .catch((error) => {
+                msg.reply("Error");
+                });
+            }
+        });
         }
     })
     .catch((error) => {
@@ -211,8 +233,9 @@ if (msg.author === client.user) {
             console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
-            console.error("Error removing document: ", error);
+            console.error("Error writing document: ", error)
         })
+        msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
         }
         else{
           //sending message in code block format in red color
@@ -262,28 +285,14 @@ if (msg.author === client.user) {
         .set({
         "Help Requested": result,
         User: msg.author.username,
+
         })
         .then(() => {
-        msg.reply("Support Request Item Added");
+            console.log("Document written")
         })
         .catch((error) => {
-        msg.reply("Error");
-        });
-    }
-
-    if (msg.content.toLowerCase().startsWith(prefix + "reqlist")) {
-    var stack = [];
-    await DB.collection("Support Ticket")
-        .get()
-        .then((list) => {
-        var str = "Support Request List: " + "\n";
-        var count = 1;
-        list.forEach((doc) => {
-            stack.push(doc.id);
-        });
-        while (stack.length > 0) {
-            str += count + ") " + stack.pop() + "\n";
-            count += 1;
+            console.error("Error writing doc: ", error)
+        })
         }
             msg.reply(str);
             msg.reply("What to do?");
@@ -370,7 +379,7 @@ if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
         docRef
             .delete()
             .then(() => {
-            msg.reply("Deleted the Help Request!");
+            msg.reply("Support Request Item Added");
             })
             .catch((error) => {
             msg.reply("Error");
@@ -521,8 +530,3 @@ function objToStr(object){
 
 const token = "";
 client.login(token);
-
-
-exports.messageHandler = messageHandler;
-
-

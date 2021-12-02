@@ -81,7 +81,7 @@ describe('Discord bot functions', ()=>{
         console.log = jest.fn()
         
         messagehandler(message)
-        
+        expect(console.log.mock.calls[0][0]).toBe("Retrieved pull requests")
         expect(message.reply.mock.calls[0][0]).toBe("Retrieving Pull Requests, give me a moment...")
     })
 
@@ -94,7 +94,8 @@ describe('Discord bot functions', ()=>{
         console.log = jest.fn()
         
         messagehandler(message)
-        
+        expect(console.log.mock.calls[0][0]).toBe("Retrieved issues requests")
+
         expect(message.reply.mock.calls[0][0]).toBe("Retrieving Issues, give me a moment...")
     })
 
