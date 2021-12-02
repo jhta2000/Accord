@@ -92,7 +92,7 @@ if (msg.author === client.user) {
             ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n" + 
-            ".remindme: Set a reminder"\n +
+            ".remindme: Set a reminder\n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
             ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
             ".assign @member role_name: adds a mentioned member to a specified team")
