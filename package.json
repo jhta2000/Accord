@@ -10,11 +10,10 @@
     "dotenv": "^10.0.0",
     "firebase": "^9.5.0",
     "firebase-admin": "^10.0.0",
-    "node-fetch": "^2.6.1",
     "octokit": "^1.7.1"
   },
   "scripts": {
-    "test": "corde"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +27,8 @@
   },
   "homepage": "https://github.com/jhta2000/Accord#readme",
   "devDependencies": {
-    "corde": "^4.4.5"
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.11",
+    "jest": "^27.4.3"
   }
 }

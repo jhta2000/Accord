@@ -1,9 +1,0 @@
-{
-    "cordeBotToken": "OTAyNzUzOTk4NTIyNjkxNjI1.YXjBLQ.3O1JhNs0rOwQaLgfrN_Q2vEdmpk",
-    "botTestId": "902753998522691625",
-    "botToken": "OTAyNzUzOTk4NTIyNjkxNjI1.YXjBLQ.3O1JhNs0rOwQaLgfrN_Q2vEdmpk",
-    "guildId": "897524642087071754",
-    "channelId": "902750973074735114",
-    "botPrefix": ".",
-    "testMatches": ["./tests/**"]
-}

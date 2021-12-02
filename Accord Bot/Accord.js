@@ -1,13 +1,5 @@
-const Discord = require("discord.js");
-const client = new Discord.Client({
-intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS"],
-});
-const randomstring = require("randomstring");
-
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: `` });
-require("dotenv").config();
-
 var admin = require("firebase-admin");
 var serviceAccount = require("./firebase.json");
 
@@ -18,17 +10,14 @@ credential: admin.credential.cert(serviceAccount),
 const DB = admin.firestore();
 const prefix = ".";
 
-client.on("ready", () => {
-console.log(`Logged in as ${client.user.tag}!`);
-});
 
-client.on("messageCreate", async (msg) => {
-    if (msg.author === client.user) {
+const messageHandler = async (msg) => {
+    if (msg.author.bot) {
         return;
     }
     try {
     if(msg.content===".ping"){
-         msg.reply('pong')
+         msg.reply("pong");
     }
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
@@ -325,7 +314,7 @@ if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
 } catch (err) {
     msg.reply(err);
 }
-});
+};
 
 async function getPullRequests(owner,repo){
 try{
@@ -462,14 +451,7 @@ function objToStr(object){
     return str + "```";
 }
 
-function loginBot(){
-    client.login(token);
-}
 
-const token = "OTAyNzUzOTk4NTIyNjkxNjI1.YXjBLQ.3O1JhNs0rOwQaLgfrN_Q2vEdmpk";
-client.login(token);
-
-exports.loginBot = loginBot;
-exports.client = client;
+exports.messageHandler = messageHandler;
 
 
