@@ -1,4 +1,10 @@
+
 const { doc } = require("@firebase/firestore");
+const Discord = require("discord.js");
+const client = new Discord.Client({
+intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS","GUILD_MEMBERS"],
+});
+
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: `` });
 var admin = require("firebase-admin");
@@ -12,13 +18,69 @@ const DB = admin.firestore();
 const prefix = ".";
 
 
-const messageHandler = async (msg) => {
-    if (msg.author.bot) {
-        return;
-    }
+
+client.on("messageCreate", async (msg) => {
+if (msg.author === client.user) {
+    return;
+}
     try {
-    if(msg.content===".ping"){
-         msg.reply("pong");
+    //bot will sometimes glitch out, enable this for debuggin purposes only
+    // if(msg.content.startsWith(prefix + "close")){
+    //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+    // }
+    if(msg.content.toLowerCase().startsWith(prefix + "assign")){
+        try{
+            
+            var message = msg.content;
+            var result = message.split(' ')
+            var role_input = result[2]
+            console.log(role_input)
+            let members = await msg.guild.members.fetch()
+            let roles = await msg.guild.roles.fetch()
+            roles.forEach(role=>{
+                if(String(role.name) === role_input){
+                    role_input = role
+                }
+            })
+            
+
+            let member = msg.mentions.members.first()
+            console.log(member.displayName)
+            
+            member.roles.add(role_input)
+            
+            msg.reply(`role added`)
+            
+            
+
+        }catch(e){
+            console.log(e)
+            msg.reply('failed to assign')
+        }
+    }
+    if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
+        try{
+            var message = msg.content;
+            var result = message.split(' ')
+            let input = {
+                data:{name: result[1],
+                    color: result[2]
+                }
+            }
+            console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
+            let rNew = await msg.guild.roles.create({
+                name: input.data.name,
+                color: input.data.color
+                }
+            )
+            msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
+            
+            
+        }catch(e){
+            console.log(e)
+            msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+        }
+
     }
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
@@ -32,8 +94,19 @@ const messageHandler = async (msg) => {
             ".rmgoal: Remove a Goal! \n" +
             ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
-            ".github issues owner repo: Issues from your specific Owner and Repo! \n" + 
-            ".remindme: Set a reminder")
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n" +
+            ".request: Inputs your Help Request to a list for others to view \n" +
+            ".reqlist: Views the list of Help Requests  \n" +
+            ".reqinfo: Information on who sent the Help Request \n" +
+            ".deletereq: Delete a Help Request from the list \n" +
+            ".remindme: Set a reminder\n" +
+            ".request: Inputs your Help Request to a list for others to view \n" +
+            ".reqlist: Views the list of Help Requests  \n" +
+            ".reqinfo: Information on who sent the Help Request \n" +
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
+            ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
+            ".assign @member role_name: adds a mentioned member to a specified team")
+
     }
     if (msg.content.toLowerCase().startsWith(prefix + "todo")) {
       //add to the To Do List
@@ -77,12 +150,10 @@ const messageHandler = async (msg) => {
         if (doc.exists) {
         docRef
             .delete()
-            .then(() => {
-            msg.reply("Deleted");
-            })
             .catch((error) => {
             msg.reply("Error");
             });
+            msg.reply("Deleted");
         }
     });
     }
@@ -120,6 +191,7 @@ const messageHandler = async (msg) => {
     .catch((error) => {
         console.error("Error writing doc: ", error)
     })
+        msg.reply("Go Accomplish Them!")
     }
     if(msg.content.toLowerCase().startsWith(prefix + "editgoaldesc")){
         var original = msg.content;
@@ -153,7 +225,8 @@ const messageHandler = async (msg) => {
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
-        msg.channel.send(objToStr(doc.data()));
+            msg.channel.send(objToStr(doc.data()));
+            msg.reply("Go Accomplish This!");
         }
         else{
         msg.channel.send("No document with that name found in the database.")
@@ -171,7 +244,7 @@ const messageHandler = async (msg) => {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
-            msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
+            console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
             console.error("Error removing document: ", error);
@@ -182,6 +255,7 @@ const messageHandler = async (msg) => {
         msg.channel.send("```diff\n-ERROR! Goal cannot be found in the database```")
         }
     })
+    msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
     .catch((error) => {
         console.error("Error finding document: ", error);
     })
@@ -247,7 +321,8 @@ const messageHandler = async (msg) => {
             str += count + ") " + stack.pop() + "\n";
             count += 1;
         }
-        msg.reply(str);
+            msg.reply(str);
+            msg.reply("What to do?");
         });
     }
 
@@ -256,7 +331,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
     await docRef.get().then((doc) => {
-        if(doc.exists){
+        if (doc.exists) {
             msg.channel.send(objToStr(doc.data()));
         }
         else{
@@ -266,6 +341,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     .catch((error) => {
         console.log("Error getting document:", error);
     });
+    msg.reply("Info Presented");
 }
 //remind me
 if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
@@ -342,7 +418,7 @@ if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
 } catch (err) {
     msg.reply(err);
 }
-};
+});
 
 async function getPullRequests(owner,repo){
 try{
