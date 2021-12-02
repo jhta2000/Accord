@@ -5,8 +5,6 @@ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS","GUILD_MEMBERS"],
 
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: `` });
-require("dotenv").config();
-
 var admin = require("firebase-admin");
 var serviceAccount = require("./firebase.json");
 
@@ -17,9 +15,7 @@ credential: admin.credential.cert(serviceAccount),
 const DB = admin.firestore();
 const prefix = ".";
 
-client.on("ready", () => {
-console.log(`Logged in as ${client.user.tag}!`);
-});
+
 
 client.on("messageCreate", async (msg) => {
 if (msg.author === client.user) {
@@ -82,6 +78,7 @@ if (msg.author === client.user) {
             console.log(e)
             msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
         }
+
     }
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
@@ -94,9 +91,12 @@ if (msg.author === client.user) {
             ".rmgoal: Remove a Goal! \n" +
             ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n" + 
+            ".remindme: Set a reminder\n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
             ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
             ".assign @member role_name: adds a mentioned member to a specified team")
+
     }
     if (msg.content.toLowerCase().startsWith(prefix + "todo")) {
       //add to the To Do List
@@ -140,12 +140,10 @@ if (msg.author === client.user) {
         if (doc.exists) {
         docRef
             .delete()
-            .then(() => {
-            msg.reply("Deleted");
-            })
             .catch((error) => {
             msg.reply("Error");
             });
+            msg.reply("Deleted");
         }
     });
     }
@@ -183,6 +181,7 @@ if (msg.author === client.user) {
     .catch((error) => {
         console.error("Error writing doc: ", error)
     })
+        msg.reply("Go Accomplish Them!")
     }
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
@@ -190,7 +189,8 @@ if (msg.author === client.user) {
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
-        msg.channel.send(objToStringCodeBlock(doc.data()));
+            msg.channel.send(objToStr(doc.data()));
+            msg.reply("Go Accomplish This!");
         }
         else{
         msg.channel.send("No document with that name found in the database.")
@@ -208,7 +208,7 @@ if (msg.author === client.user) {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
-            msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
+            console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
             console.error("Error removing document: ", error);
@@ -219,6 +219,7 @@ if (msg.author === client.user) {
         msg.channel.send("```diff\n-ERROR! Goal cannot be found in the database```")
         }
     })
+    msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
     .catch((error) => {
         console.error("Error finding document: ", error);
     })
@@ -284,7 +285,8 @@ if (msg.author === client.user) {
             str += count + ") " + stack.pop() + "\n";
             count += 1;
         }
-        msg.reply(str);
+            msg.reply(str);
+            msg.reply("What to do?");
         });
     }
 
@@ -293,18 +295,73 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
     await docRef.get().then((doc) => {
-        if(doc.exists){
-        msg.channel.send(objToStringCodeBlock(doc.data()));
+        if (doc.exists) {
+            msg.channel.send(objToStr(doc.data()));
         }
         else{
-        msg.channel.send("No Support Ticket Found.")
+            msg.channel.send("No Support Ticket Found.")
         }
     })
     .catch((error) => {
         console.log("Error getting document:", error);
     });
+    msg.reply("Info Presented");
 }
-    if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
+//remind me
+if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
+    var original = msg.content;
+    var result = original.substring(original.indexOf(" ") + 1);
+    var resultSplit = result.split(" ");
+    if(resultSplit.length < 2 || resultSplit.length > 2){
+        msg.reply("Please make sure your message is in the form of '.remindme <integer><s, m, d, or w> <reminder message>'")
+    }
+    else{
+        var time = resultSplit[0];
+        var number = time.slice(0,-1);
+        var measurement = time.slice(-1);
+        var message = resultSplit[1];
+        function reminder(){
+            msg.reply("\n**REMINDER:** " + message)
+        }
+        switch(measurement){
+            case 's':{
+                var msDelay = number * 1000;
+                msg.reply("Reminder has been set. You will be reminded in " + number + " seconds.")
+                setTimeout(reminder, msDelay)
+                break;
+            }
+            case 'm':{
+                var msDelay = number * 60000;
+                msg.reply("Reminder has been set. You will be reminded in " + number + " minutes.")
+                setTimeout(reminder, msDelay)
+                break;
+            }
+            case 'h':{
+                var msDelay = number * 3600000;
+                msg.reply("Reminder has been set. You will be reminded in " + number + " hours.")
+                setTimeout(reminder, msDelay)
+                break;
+            }
+            case 'd':{
+                var msDelay = number * 86400000;
+                msg.reply("Reminder has been set. You will be reminded in " + number + " days.")
+                setTimeout(reminder, msDelay)
+                break;
+            }
+            case 'w':{
+                var msDelay = number * 604800000;
+                msg.reply("Reminder has been set. You will be reminded in " + number + " weeks.")
+                setTimeout(reminder, msDelay)
+                break;
+            }
+            default:{
+                msg.reply("Please make sure you entered a correct mesurement in the form of 's' for seconds, 'm' for minutes, 'h' for hours, and 'w' for weeks.")
+            }
+        }
+    }
+    
+}
+if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
@@ -322,9 +379,9 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     });
     }       
         
-} catch (err) {
+    } catch (err) {
     msg.reply(err);
-}
+    }
 });
 
 async function getPullRequests(owner,repo){
@@ -450,16 +507,22 @@ try{
 }
 
 
-//This little function converts an obect in JSON format to a string
-//Decided to make it a code block in discord so add the `s
-function objToStringCodeBlock(object){
-var str = '```';
-for(var k in object){
-    if(object.hasOwnProperty(k)){
-    str += k+": " + object[k] + '\n'
+//This function converts an obect in JSON format to a string
+//Decided to make it a code block in discord so add the triple ```
+function objToStr(object){
+    var str = '```';
+    for(var k in object){
+        if(object.hasOwnProperty(k)){
+            str += k+": " + object[k] + '\n'
+        }
     }
+    return str + "```";
 }
-return str + "```";
-}
-const token = "OTAwMTIzMTY4NzM4NTEyOTI3.YW8vBg.5vQuy8lA2PanbDNI4hjqqHN20Ck";
+
+const token = "";
 client.login(token);
+
+
+exports.messageHandler = messageHandler;
+
+
