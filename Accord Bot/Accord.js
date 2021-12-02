@@ -196,7 +196,7 @@ const messageHandler = async (msg) => {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if(doc.exists){
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
