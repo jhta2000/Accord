@@ -1,5 +1,13 @@
 #List of classes that we think needs to be implemented
-
-bot class
-message class
-chat room class
+Bot Class
+Progress Class
+Tracker Class
+Role Class
+React Class
+Invite Class
+Thread Class
+Voice Class
+Channel Class
+Timeline Class
+Webhook Class
+Event Class
