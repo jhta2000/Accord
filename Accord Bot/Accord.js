@@ -26,10 +26,10 @@ const messagehandler = async (msg) => {
     }
         try {
         //bot will sometimes glitch out, enable this for debuggin purposes only
-        if(msg.content.startsWith(prefix + "close")){
-            msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
-            msg.channel.send(`Bot has been destroyed`)
-        }
+        // if(msg.content.startsWith(prefix + "close")){
+        //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+        //     msg.channel.send(`Bot has been destroyed`)
+        // }
 
         //Fetches a single role and member to assign together
 
@@ -293,105 +293,101 @@ const messagehandler = async (msg) => {
         .catch((error) => {
             console.error("Error writing doc: ", error)
         })
-        }
-            msg.reply(str);
-            msg.reply("What to do?");
-        });
     }
 
-if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Support Ticket").doc(result);
-    await docRef.get().then((doc) => {
-        if (doc.exists) {
-            msg.channel.send(objToStr(doc.data()));
+    if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
+        var original = msg.content;
+        var result = original.substr(original.indexOf(" ") + 1);
+        const docRef = DB.collection("Support Ticket").doc(result);
+        await docRef.get().then((doc) => {
+            if (doc.exists) {
+                msg.channel.send(objToStr(doc.data()));
+            }
+            else{
+                msg.channel.send("No Support Ticket Found.")
+            }
+        })
+        .catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        msg.reply("Info Presented");
+    }
+    //remind me
+    if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
+        var original = msg.content;
+        var result = original.substring(original.indexOf(" ") + 1);
+        var resultSplit = result.split(" ");
+        if(resultSplit.length < 2 || resultSplit.length > 2){
+            msg.reply("Please make sure your message is in the form of '.remindme <integer><s, m, d, or w> <reminder message>'")
         }
         else{
-            msg.channel.send("No Support Ticket Found.")
-        }
-    })
-    .catch((error) => {
-        console.log("Error getting document:", error);
-    });
-    msg.reply("Info Presented");
-}
-//remind me
-if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
-    var original = msg.content;
-    var result = original.substring(original.indexOf(" ") + 1);
-    var resultSplit = result.split(" ");
-    if(resultSplit.length < 2 || resultSplit.length > 2){
-        msg.reply("Please make sure your message is in the form of '.remindme <integer><s, m, d, or w> <reminder message>'")
-    }
-    else{
-        var time = resultSplit[0];
-        var number = time.slice(0,-1);
-        var measurement = time.slice(-1);
-        var message = resultSplit[1];
-        function reminder(){
-            msg.reply("\n**REMINDER:** " + message)
-        }
-        switch(measurement){
-            case 's':{
-                var msDelay = number * 1000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " seconds.")
-                setTimeout(reminder, msDelay)
-                break;
+            var time = resultSplit[0];
+            var number = time.slice(0,-1);
+            var measurement = time.slice(-1);
+            var message = resultSplit[1];
+            function reminder(){
+                msg.reply("\n**REMINDER:** " + message)
             }
-            case 'm':{
-                var msDelay = number * 60000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " minutes.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'h':{
-                var msDelay = number * 3600000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " hours.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'd':{
-                var msDelay = number * 86400000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " days.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'w':{
-                var msDelay = number * 604800000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " weeks.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            default:{
-                msg.reply("Please make sure you entered a correct mesurement in the form of 's' for seconds, 'm' for minutes, 'h' for hours, and 'w' for weeks.")
+            switch(measurement){
+                case 's':{
+                    var msDelay = number * 1000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " seconds.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'm':{
+                    var msDelay = number * 60000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " minutes.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'h':{
+                    var msDelay = number * 3600000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " hours.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'd':{
+                    var msDelay = number * 86400000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " days.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'w':{
+                    var msDelay = number * 604800000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " weeks.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                default:{
+                    msg.reply("Please make sure you entered a correct mesurement in the form of 's' for seconds, 'm' for minutes, 'h' for hours, and 'w' for weeks.")
+                }
             }
         }
-    }
     
-}
-if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Support Ticket").doc(result);
-    await docRef.get().then((doc) => {
-        if (doc.exists) {
-        docRef
-            .delete()
-            .then(() => {
-            msg.reply("Support Request Item Added");
-            })
-            .catch((error) => {
-            msg.reply("Error");
+    }
+        if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
+            var original = msg.content;
+            var result = original.substr(original.indexOf(" ") + 1);
+            const docRef = DB.collection("Support Ticket").doc(result);
+            await docRef.get().then((doc) => {
+                if (doc.exists) {
+                docRef
+                    .delete()
+                    .then(() => {
+                    msg.reply("Support Request Item Added");
+                    })
+                    .catch((error) => {
+                    msg.reply("Error");
+                    });
+                }
             });
-        }
-    });
-    }       
+        }       
         
-    } catch (err) {
+    }catch (err) {
     msg.reply(err);
     }
-});
+}
 
 async function getPullRequests(owner,repo){
 try{
@@ -515,6 +511,7 @@ try{
 
 }
 
+client.on("messageCreate", messagehandler)
 
 //This function converts an obect in JSON format to a string
 //Decided to make it a code block in discord so add the triple ```
