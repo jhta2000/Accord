@@ -17,7 +17,7 @@ const messageHandler = async (msg) => {
     }
     try {
     if(msg.content===".ping"){
-         msg.reply("pong");
+        msg.reply("pong");
     }
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
@@ -75,12 +75,10 @@ const messageHandler = async (msg) => {
         if (doc.exists) {
         docRef
             .delete()
-            .then(() => {
-            msg.reply("Deleted");
-            })
             .catch((error) => {
             msg.reply("Error");
             });
+            msg.reply("Deleted");
         }
     });
     }
@@ -118,6 +116,7 @@ const messageHandler = async (msg) => {
     .catch((error) => {
         console.error("Error writing doc: ", error)
     })
+        msg.reply("Go Accomplish Them!")
     }
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
@@ -125,7 +124,8 @@ const messageHandler = async (msg) => {
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
     await docRef.get().then((doc) => {
         if(doc.exists){
-        msg.channel.send(objToStr(doc.data()));
+            msg.channel.send(objToStr(doc.data()));
+            msg.reply("Go Accomplish This!");
         }
         else{
         msg.channel.send("No document with that name found in the database.")
@@ -143,7 +143,7 @@ const messageHandler = async (msg) => {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
-            msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
+            console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
             console.error("Error removing document: ", error);
@@ -154,6 +154,7 @@ const messageHandler = async (msg) => {
         msg.channel.send("```diff\n-ERROR! Goal cannot be found in the database```")
         }
     })
+    msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
     .catch((error) => {
         console.error("Error finding document: ", error);
     })
@@ -219,7 +220,8 @@ const messageHandler = async (msg) => {
             str += count + ") " + stack.pop() + "\n";
             count += 1;
         }
-        msg.reply(str);
+            msg.reply(str);
+            msg.reply("What to do?");
         });
     }
 
@@ -228,7 +230,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection("Support Ticket").doc(result);
     await docRef.get().then((doc) => {
-        if(doc.exists){
+        if (doc.exists) {
             msg.channel.send(objToStr(doc.data()));
         }
         else{
@@ -238,6 +240,7 @@ if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
     .catch((error) => {
         console.log("Error getting document:", error);
     });
+    msg.reply("Info Presented");
 }
 //remind me
 if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
