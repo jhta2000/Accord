@@ -91,7 +91,11 @@ if (msg.author === client.user) {
             ".rmgoal: Remove a Goal! \n" +
             ".github: Learn about this GitHub Command! \n" +
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
-            ".github issues owner repo: Issues from your specific Owner and Repo! \n" + 
+            ".github issues owner repo: Issues from your specific Owner and Repo! \n" +
+            ".request: Inputs your Help Request to a list for others to view \n" +
+            ".reqlist: Views the list of Help Requests  \n" +
+            ".reqinfo: Information on who sent the Help Request \n" +
+            ".deletereq: Delete a Help Request from the list \n" +
             ".remindme: Set a reminder\n" +
             ".request: Inputs your Help Request to a list for others to view \n" +
             ".reqlist: Views the list of Help Requests  \n" +
