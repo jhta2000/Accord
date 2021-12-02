@@ -525,5 +525,4 @@ function objToStr(object){
     return str + "```";
 }
 
-const token = "";
-client.login(token);
+
