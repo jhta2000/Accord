@@ -155,9 +155,10 @@ const messageHandler = async (msg) => {
             .catch((error) => {
             msg.reply("Error");
             });
-            msg.reply("Deleted");
+            //msg.reply("Deleted");
         }
     });
+    msg.reply("Deleted");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
     var original = msg.content;
@@ -210,6 +211,8 @@ const messageHandler = async (msg) => {
     .catch((error) => {
         console.log("Error getting document:", error);
     });
+
+    msg.reply("Go Accomplish This!");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "rmgoal")){
     var original = msg.content;
