@@ -57,7 +57,8 @@ describe("Message Handler", () => {
     it("deletes a goal", async () => {
         message.content = ".rmgoal booga";
         await messageHandler(message);
-        expect(message.channel.send).toHaveBeenCalledWith("```yaml\nGoal has been successfully deleted! ```");
+        console.log =jest.fn()
+        expect(console.log.mock.calls).toHaveBeenCalledWith("```yaml\nGoal has been successfully deleted! ```");
         // if we are testing for channel send then replace with message.channel.send
     })
     it("github", async () => {
