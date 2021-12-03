@@ -26,10 +26,10 @@ const messageHandler = async (msg) => {
     }
         try {
         //bot will sometimes glitch out, enable this for debuggin purposes only
-        // if(msg.content.startsWith(prefix + "close")){
-        //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
-        //     msg.channel.send(`Bot has been destroyed`)
-        // }
+        if(msg.content.startsWith(prefix + "close")){
+            msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+            msg.channel.send(`Bot has been destroyed`)
+        }
 
         //Fetches a single role and member to assign together
 
@@ -105,10 +105,6 @@ const messageHandler = async (msg) => {
             ".reqinfo: Information on who sent the Help Request \n" +
             ".deletereq: Delete a Help Request from the list \n" +
             ".remindme: Set a reminder\n" +
-            ".request: Inputs your Help Request to a list for others to view \n" +
-            ".reqlist: Views the list of Help Requests  \n" +
-            ".reqinfo: Information on who sent the Help Request \n" +
-            ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
             ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
             ".assign @member role_name: adds a mentioned member to a specified team")
 
@@ -227,6 +223,7 @@ const messageHandler = async (msg) => {
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
             //console.log("```yaml\nGoal has been successfully deleted! ```")
+            msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
             console.error("Error writing document: ", error)
@@ -238,7 +235,7 @@ const messageHandler = async (msg) => {
         msg.channel.send("```diff\n-ERROR! Goal cannot be found in the database```")
         }
     })
-    msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
+    //msg.channel.send("```yaml\nGoal has been successfully deleted! ```")
     .catch((error) => {
         console.error("Error finding document: ", error);
     })
@@ -389,7 +386,7 @@ const messageHandler = async (msg) => {
                 docRef
                     .delete()
                     .then(() => {
-                    msg.reply("Support Request Item Added");
+                    msg.reply("Support Request Item Deleted");
                     })
                     .catch((error) => {
                     msg.reply("Error");
@@ -539,6 +536,9 @@ function objToStr(object){
     return str + "```";
 }
 
+const token = "OTAwMTIzMTY4NzM4NTEyOTI3.YW8vBg._BtUtqkL3RbCg3In1TgVET5IOog"
+
+client.login(token)
 
 module.exports = messageHandler
 
