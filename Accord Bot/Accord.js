@@ -170,7 +170,6 @@ const messageHandler = async (msg) => {
     var result = original.substr(original.indexOf(" ") + 1);
     await DB.collection(msg.author.username + " Goals").doc(result).set({
         "Goal Description": " ",
-        "Expected Goal Complete Date": " ",
         "Goal Author": msg.author.username,
         "Goal Created": new Date(admin.firestore.Timestamp.now().seconds*1000).toLocaleDateString()//admin.firestore.Timestamp.fromDate(new Date())
     })
