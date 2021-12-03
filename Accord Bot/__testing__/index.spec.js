@@ -107,7 +107,7 @@ describe('Discord bot functions', ()=>{
         })    
 
          messagehandler(message)
-         expect(message.reply.mock.calls[0][0]).toBe( ".todo: Add to your personal To Do List! \n" +
+         expect(message.reply.mock.calls[0][0]).toBe(".todo: Add to your personal To Do List! \n" +
          ".list: View your personal To Do List! \n" +
          ".remove: Remove one of your To Do List Duties! \n" +
          ".creategoal: Create your own Personal Goal! \n" +
