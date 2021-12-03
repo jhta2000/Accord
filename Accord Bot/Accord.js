@@ -101,6 +101,9 @@ const messageHandler = async (msg) => {
             ".github pullrq owner repo: Pull Requests from your sepcifed Owner and Repo! \n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n" + 
             ".remindme: Set a reminder\n" +
+            ".request: Inputs your Help Request to a list for others to view \n" +
+            ".reqlist: Views the list of Help Requests  \n" +
+            ".reqinfo: Information on who sent the Help Request \n" +
             ".github issues owner repo: Issues from your specific Owner and Repo! \n"+
             ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
             ".assign @member role_name: adds a mentioned member to a specified team")
