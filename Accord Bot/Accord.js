@@ -140,6 +140,7 @@ const messageHandler = async (msg) => {
         msg.reply(str);
         });
     }
+    
     if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
@@ -201,23 +202,7 @@ const messageHandler = async (msg) => {
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
         }
-        if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
-        var original = msg.content;
-        var result = original.substr(original.indexOf(" ") + 1);
-        const docRef = DB.collection(msg.author.username + " To Do").doc(result);
-         docRef.get().then((doc) => {
-            if (doc.exists) {
-            docRef
-                .delete()
-                .then(() => {
-                msg.reply("Deleted");
-                })
-                .catch((error) => {
-                msg.reply("Error");
-                });
-            }
-        });
-        }
+        
     })
     .catch((error) => {
         console.log("Error getting document:", error);
@@ -277,24 +262,23 @@ const messageHandler = async (msg) => {
     }
         }
         
-    if (msg.content.toLowerCase().startsWith(prefix + "request")) {
-      //add to the Help Request List shared by everyone
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection("Support Ticket")
-        .doc(result)
-        .set({
-        "Help Requested": result,
-        User: msg.author.username,
-
-        })
-        .then(() => {
-            console.log("Document written")
-        })
-        .catch((error) => {
-            console.error("Error writing doc: ", error)
-        })
-    }
+        if (msg.content.toLowerCase().startsWith(prefix + "request")) {
+            //add to the Help Request List shared by everyone
+          var original = msg.content;
+          var result = original.substr(original.indexOf(" ") + 1);
+          await DB.collection("Support Ticket")
+              .doc(result)
+              .set({
+              "Help Requested": result,
+              User: msg.author.username,
+              })
+              .then(() => {
+              msg.reply("Support Request Item Added");
+              })
+              .catch((error) => {
+              msg.reply("Error");
+              });
+          }
 
     if (msg.content.toLowerCase().startsWith(prefix + "reqlist")) {
         var stack = [];
