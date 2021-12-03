@@ -268,6 +268,9 @@ const messageHandler = async (msg) => {
     .catch((error) => {
         console.error("Error finding document: ", error);
     })
+
+    msg.channel.send("```Type '.ls' to view a list of goals.```");
+
     }
 
     if(msg.content.toLowerCase().startsWith(prefix + "github")){
