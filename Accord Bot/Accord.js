@@ -222,7 +222,7 @@ const messageHandler = async (msg) => {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
-            console.log("```yaml\nGoal has been successfully deleted! ```")
+            //console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
             console.error("Error writing document: ", error)
