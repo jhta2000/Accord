@@ -39,7 +39,7 @@ describe("Message Handler", () => {
     it("creates goal list", async () => {
         message.content = ".creategoal booga";
         await messageHandler(message);
-        expect(message.channel.send).toHaveBeenCalledWith("```Goal has been created. Type '.ls' to view a list of goals.```");
+        expect(message.channel.send).toHaveBeenCalledWith("```yaml\nGoal has been created. Type '.ls' to view a list of goals.```");
         // if we are testing for channel send then replace with message.channel.send
     })
     it("view list", async () => {
