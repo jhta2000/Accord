@@ -1,3 +1,5 @@
+
+const { doc } = require("@firebase/firestore");
 const Discord = require("discord.js");
 const client = new Discord.Client({
 intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_WEBHOOKS","GUILD_MEMBERS"],
@@ -166,23 +168,43 @@ const messageHandler = async (msg) => {
     msg.reply("Deleted");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection(msg.author.username + " Goals").doc(result).set({
-        "Goal Description": " ",
-        "Expected Goal Complete Date": " ",
-        "Goal Author": msg.author.username,
-        "Goal Created": new Date(admin.firestore.Timestamp.now().seconds*1000).toLocaleDateString()//admin.firestore.Timestamp.fromDate(new Date())
+        var original = msg.content;
+        var goalName = original.substr(original.indexOf(" ") + 1);
+        await DB.collection(msg.author.username + " Goals").doc(goalName).set({
+            "Goal Description": " ",
+            "Goal Author": msg.author.username,
+            "Goal Created": new Date(admin.firestore.Timestamp.now().seconds*1000).toLocaleDateString()//admin.firestore.Timestamp.fromDate(new Date())
+        })
+        .then(() => {
+            console.log("Document written")
+        })
+        .catch((error) => {
+            console.error("Error writing document: ", error)
+        })
+        msg.channel.send("```yaml\nGoal has been created. Type '.ls' to view a list of goals.```");
+    }
+
+    if(msg.content.toLowerCase().startsWith(prefix + "ls")){
+    await DB.collection(msg.author.username + " Goals").get().then((goals) => {
+        var str = '```Current List of Goals:' + "\n\n";
+        var numbering = 1;
+        goals.forEach((doc) => {
+        str += numbering + ")" + doc.id + "\n\n";
+        numbering += 1;
+        });
+        str += "```"
+        msg.channel.send(str);
     })
     .then(() => {
         console.log("Document written")
     })
     .catch((error) => {
-        console.error("Error writing document: ", error)
+        console.error("Error writing doc: ", error)
     })
-    msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
+        msg.reply("Go Accomplish Them!")
     }
-        if(msg.content.toLowerCase().startsWith(prefix + "editgoaldesc")){
+
+    if(msg.content.toLowerCase().startsWith(prefix + "editgoaldesc")){
         var original = msg.content;
         var result = original.substr(original.indexOf(" ") + 1);
         var resultSplit = result.split(" ");
@@ -207,26 +229,6 @@ const messageHandler = async (msg) => {
                 msg.channel.send("```diff\n-ERROR! Please make sure that a goal with the name specified exists.```")
             }            
         }
-    }
-            
-    if(msg.content.toLowerCase().startsWith(prefix + "ls")){
-    await DB.collection(msg.author.username + " Goals").get().then((goals) => {
-        var str = '```Current List of Goals:' + "\n\n";
-        var numbering = 1;
-        goals.forEach((doc) => {
-        str += numbering + ")" + doc.id + "\n\n";
-        numbering += 1;
-        });
-        str += "```"
-        msg.channel.send(str);
-    })
-    .then(() => {
-        console.log("Document written")
-    })
-    .catch((error) => {
-        console.error("Error writing doc: ", error)
-    })
-        msg.reply("Go Accomplish Them!")
     }
 
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
@@ -558,10 +560,10 @@ client.on("messageCreate", messageHandler)
 //This function converts an obect in JSON format to a string
 //Decided to make it a code block in discord so add the triple ```
 function objToStr(object){
-    var str = '```';
+    var str = "```";
     for(var k in object){
         if(object.hasOwnProperty(k)){
-            str += k+": " + object[k] + '\n'
+            str += k + ": " + object[k] + '\n'
         }
     }
     return str + "```";
