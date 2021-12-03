@@ -6,7 +6,7 @@ Accord is a discord project management system composed of a bot that implements 
 
 
 
-#Commands for Accord Bot
+# Commands for Accord Bot
 
 * Once you have logged on to discord and have accord bot in your respective server as indicated by the instructions in our INSTALL.md file simply run the `.commands` command to get a list of all commands you can try.
 
