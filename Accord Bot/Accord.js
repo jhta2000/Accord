@@ -14,72 +14,80 @@ credential: admin.credential.cert(serviceAccount),
 
 const DB = admin.firestore();
 const prefix = ".";
-
-
-
-client.on("messageCreate", async (msg) => {
-if (msg.author === client.user) {
-    return;
+const logon = () => {
+    console.log(`Logged in as ${client.user.tag}!`);
 }
-    try {
-    //bot will sometimes glitch out, enable this for debuggin purposes only
-    // if(msg.content.startsWith(prefix + "close")){
-    //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
-    // }
-    if(msg.content.toLowerCase().startsWith(prefix + "assign")){
-        try{
-            
-            var message = msg.content;
-            var result = message.split(' ')
-            var role_input = result[2]
-            console.log(role_input)
-            let members = await msg.guild.members.fetch()
-            let roles = await msg.guild.roles.fetch()
-            roles.forEach(role=>{
-                if(String(role.name) === role_input){
-                    role_input = role
-                }
-            })
-            
+client.on("ready", logon);
 
-            let member = msg.mentions.members.first()
-            console.log(member.displayName)
-            
-            member.roles.add(role_input)
-            
-            msg.reply(`role added`)
-            
-            
 
-        }catch(e){
-            console.log(e)
-            msg.reply('failed to assign')
-        }
+const messageHandler = async (msg) => {
+    if (msg.author === client.user) {
+        return;
     }
-    if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
-        try{
-            var message = msg.content;
-            var result = message.split(' ')
-            let input = {
-                data:{name: result[1],
-                    color: result[2]
-                }
+        try {
+        //bot will sometimes glitch out, enable this for debuggin purposes only
+        // if(msg.content.startsWith(prefix + "close")){
+        //     msg.channel.send("shutting down GeetBot...").then(()=>client.destroy())
+        //     msg.channel.send(`Bot has been destroyed`)
+        // }
+
+        //Fetches a single role and member to assign together
+
+        if(msg.content.toLowerCase().startsWith(prefix + "assign")){
+            try{
+                
+                var message = msg.content;
+                var result = message.split(' ')
+                var role_input = result[2]
+                console.log(role_input)
+                let members = await msg.guild.members.fetch()
+                let roles = await msg.guild.roles.fetch()
+                roles.forEach(role=>{
+                    if(String(role.name) === role_input){
+                        role_input = role
+                    }
+                })
+                
+    
+                let member = msg.mentions.members.first()
+                console.log(member.displayName)
+                
+                member.roles.add(role_input)
+                
+                msg.reply(`role added`)
+                
+                
+    
+            }catch(e){
+                console.log(e)
+                msg.reply('failed to assign')
             }
-            console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
-            let rNew = await msg.guild.roles.create({
-                name: input.data.name,
-                color: input.data.color
+        }
+        if(msg.content.toLowerCase().startsWith(prefix + "createrole")){
+            try{
+                var message = msg.content;
+                var result = message.split(' ')
+                let input = {
+                    data:{name: result[1],
+                        color: result[2]
+                    }
                 }
-            )
-            msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
-            
-            
-        }catch(e){
-            console.log(e)
-            msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+                console.log(`name: ${input.data.name}\n color: ${input.data.color}\n`)
+                let rNew = await msg.guild.roles.create({
+                    name: input.data.name,
+                    color: input.data.color
+                    }
+                )
+                msg.reply(`New role has been created\n for ${input.data.name} with color: ${input.data.color}`)  
+                
+                
+            }catch(e){
+                console.log(e)
+                msg.reply('failed to create role \n try without "<>" .createrole <name of team> <#color number> ')
+            }
         }
 
-    }
+       
     if (msg.content.toLowerCase().startsWith(prefix + "commands")) {
       //list of commands
         msg.reply(".todo: Add to your personal To Do List! \n" +
@@ -139,20 +147,22 @@ if (msg.author === client.user) {
         msg.reply(str);
         });
     }
+    
     if (msg.content.toLowerCase().startsWith(prefix + "remove")) {
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " To Do").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if (doc.exists) {
         docRef
             .delete()
             .catch((error) => {
             msg.reply("Error");
             });
-            msg.reply("Deleted");
+            //msg.reply("Deleted");
         }
     });
+    msg.reply("Deleted");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "creategoal")){
     var original = msg.content;
@@ -190,36 +200,38 @@ if (msg.author === client.user) {
     })
         msg.reply("Go Accomplish Them!")
     }
+
     if(msg.content.toLowerCase().startsWith(prefix + "viewgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if(doc.exists){
             msg.channel.send(objToStr(doc.data()));
             msg.reply("Go Accomplish This!");
         }
-        else{
-        msg.channel.send("No document with that name found in the database.")
-        }
+        
     })
     .catch((error) => {
         console.log("Error getting document:", error);
     });
+
+    msg.reply("Go Accomplish This!");
     }
     if(msg.content.toLowerCase().startsWith(prefix + "rmgoal")){
     var original = msg.content;
     var result = original.substr(original.indexOf(" ") + 1);
     const docRef = DB.collection(msg.author.username + " Goals").doc(result);
-    await docRef.get().then((doc) => {
+    docRef.get().then((doc) => {
         if(doc.exists){
         docRef.delete().then(() => {
             //sending a channel message in green color along with a code block
-            console.log("```yaml\nGoal has been successfully deleted! ```")
+            //console.log("```yaml\nGoal has been successfully deleted! ```")
         })
         .catch((error) => {
-            console.error("Error removing document: ", error);
+            console.error("Error writing document: ", error)
         })
+        msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
         }
         else{
           //sending message in code block format in red color
@@ -260,136 +272,136 @@ if (msg.author === client.user) {
     }
         }
         
-    if (msg.content.toLowerCase().startsWith(prefix + "request")) {
-      //add to the Help Request List shared by everyone
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    await DB.collection("Support Ticket")
-        .doc(result)
-        .set({
-        "Help Requested": result,
-        User: msg.author.username,
-        })
-        .then(() => {
-        msg.reply("Support Request Item Added");
-        })
-        .catch((error) => {
-        msg.reply("Error");
-        });
-    }
+        if (msg.content.toLowerCase().startsWith(prefix + "request")) {
+            //add to the Help Request List shared by everyone
+          var original = msg.content;
+          var result = original.substr(original.indexOf(" ") + 1);
+          await DB.collection("Support Ticket")
+              .doc(result)
+              .set({
+              "Help Requested": result,
+              User: msg.author.username,
+              })
+              .then(() => {
+              msg.reply("Support Request Item Added");
+              })
+              .catch((error) => {
+              msg.reply("Error");
+              });
+          }
 
     if (msg.content.toLowerCase().startsWith(prefix + "reqlist")) {
-    var stack = [];
-    await DB.collection("Support Ticket")
-        .get()
-        .then((list) => {
-        var str = "Support Request List: " + "\n";
-        var count = 1;
-        list.forEach((doc) => {
-            stack.push(doc.id);
-        });
-        while (stack.length > 0) {
-            str += count + ") " + stack.pop() + "\n";
-            count += 1;
-        }
-            msg.reply(str);
-            msg.reply("What to do?");
-        });
-    }
-
-if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Support Ticket").doc(result);
-    await docRef.get().then((doc) => {
-        if (doc.exists) {
-            msg.channel.send(objToStr(doc.data()));
-        }
-        else{
-            msg.channel.send("No Support Ticket Found.")
-        }
-    })
-    .catch((error) => {
-        console.log("Error getting document:", error);
-    });
-    msg.reply("Info Presented");
-}
-//remind me
-if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
-    var original = msg.content;
-    var result = original.substring(original.indexOf(" ") + 1);
-    var resultSplit = result.split(" ");
-    if(resultSplit.length < 2 || resultSplit.length > 2){
-        msg.reply("Please make sure your message is in the form of '.remindme <integer><s, m, d, or w> <reminder message>'")
-    }
-    else{
-        var time = resultSplit[0];
-        var number = time.slice(0,-1);
-        var measurement = time.slice(-1);
-        var message = resultSplit[1];
-        function reminder(){
-            msg.reply("\n**REMINDER:** " + message)
-        }
-        switch(measurement){
-            case 's':{
-                var msDelay = number * 1000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " seconds.")
-                setTimeout(reminder, msDelay)
-                break;
+        var stack = [];
+        await DB.collection("Support Ticket")
+            .get()
+            .then((list) => {
+            var str = "Support Request List: " + "\n";
+            var count = 1;
+            list.forEach((doc) => {
+                stack.push(doc.id);
+            });
+            while (stack.length > 0) {
+                str += count + ") " + stack.pop() + "\n";
+                count += 1;
             }
-            case 'm':{
-                var msDelay = number * 60000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " minutes.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'h':{
-                var msDelay = number * 3600000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " hours.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'd':{
-                var msDelay = number * 86400000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " days.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            case 'w':{
-                var msDelay = number * 604800000;
-                msg.reply("Reminder has been set. You will be reminded in " + number + " weeks.")
-                setTimeout(reminder, msDelay)
-                break;
-            }
-            default:{
-                msg.reply("Please make sure you entered a correct mesurement in the form of 's' for seconds, 'm' for minutes, 'h' for hours, and 'w' for weeks.")
-            }
-        }
-    }
-    
-}
-if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
-    var original = msg.content;
-    var result = original.substr(original.indexOf(" ") + 1);
-    const docRef = DB.collection("Support Ticket").doc(result);
-    await docRef.get().then((doc) => {
-        if (doc.exists) {
-        docRef
-            .delete()
-            .then(() => {
-            msg.reply("Deleted the Help Request!");
-            })
-            .catch((error) => {
-            msg.reply("Error");
+                msg.reply(str);
+                msg.reply("What to do?");
             });
         }
-    });
-    }       
+
+    if(msg.content.toLowerCase().startsWith(prefix + "reqinfo")){
+        var original = msg.content;
+        var result = original.substr(original.indexOf(" ") + 1);
+        const docRef = DB.collection("Support Ticket").doc(result);
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                msg.channel.send(objToStr(doc.data()));
+            }
+            else{
+                msg.channel.send("No Support Ticket Found.")
+            }
+        })
+        .catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        msg.reply("Info Presented");
+    }
+    //remind me
+    if(msg.content.toLowerCase().startsWith(prefix + "remindme")){
+        var original = msg.content;
+        var result = original.substring(original.indexOf(" ") + 1);
+        var resultSplit = result.split(" ");
+        if(resultSplit.length < 2 || resultSplit.length > 2){
+            msg.reply("Please make sure your message is in the form of '.remindme <integer><s, m, d, or w> <reminder message>'")
+        }
+        else{
+            var time = resultSplit[0];
+            var number = time.slice(0,-1);
+            var measurement = time.slice(-1);
+            var message = resultSplit[1];
+            function reminder(){
+                msg.reply("\n**REMINDER:** " + message)
+            }
+            switch(measurement){
+                case 's':{
+                    var msDelay = number * 1000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " seconds.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'm':{
+                    var msDelay = number * 60000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " minutes.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'h':{
+                    var msDelay = number * 3600000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " hours.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'd':{
+                    var msDelay = number * 86400000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " days.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                case 'w':{
+                    var msDelay = number * 604800000;
+                    msg.reply("Reminder has been set. You will be reminded in " + number + " weeks.")
+                    setTimeout(reminder, msDelay)
+                    break;
+                }
+                default:{
+                    msg.reply("Please make sure you entered a correct mesurement in the form of 's' for seconds, 'm' for minutes, 'h' for hours, and 'w' for weeks.")
+                }
+            }
+        }
+    
+    }
+        if (msg.content.toLowerCase().startsWith(prefix + "deletereq")) {
+            var original = msg.content;
+            var result = original.substr(original.indexOf(" ") + 1);
+            const docRef = DB.collection("Support Ticket").doc(result);
+            docRef.get().then((doc) => {
+                if (doc.exists) {
+                docRef
+                    .delete()
+                    .then(() => {
+                    msg.reply("Support Request Item Added");
+                    })
+                    .catch((error) => {
+                    msg.reply("Error");
+                    });
+                }
+            });
+        }       
         
-} catch (err) {
+    }catch (err) {
     msg.reply(err);
+    }
 }
-});
 
 async function getPullRequests(owner,repo){
 try{
@@ -513,6 +525,7 @@ try{
 
 }
 
+client.on("messageCreate", messageHandler)
 
 //This function converts an obect in JSON format to a string
 //Decided to make it a code block in discord so add the triple ```
@@ -527,6 +540,5 @@ function objToStr(object){
 }
 
 
-exports.messageHandler = messageHandler;
-
+module.exports = messageHandler
 
