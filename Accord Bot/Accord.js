@@ -536,9 +536,7 @@ function objToStr(object){
     return str + "```";
 }
 
-const token = "OTAwMTIzMTY4NzM4NTEyOTI3.YW8vBg._BtUtqkL3RbCg3In1TgVET5IOog"
 
-client.login(token)
 
 module.exports = messageHandler
 
