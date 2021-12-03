@@ -94,7 +94,7 @@ const messageHandler = async (msg) => {
             ".list: View your personal To Do List! \n" +
             ".remove: Remove one of your To Do List Duties! \n" +
             ".creategoal: Create your own Personal Goal! \n" +
-            ".editgoaldesc: Edit a goal's description to your liking\n" +
+            ".editgoaldesc: Edit a goal's description to your liking! \n" +
             ".ls: View your List of Goals! \n" +
             ".viewgoal: View a Specific Goal and Learn more about it! \n" +
             ".rmgoal: Remove a Goal! \n" +
@@ -105,9 +105,10 @@ const messageHandler = async (msg) => {
             ".reqlist: Views the list of Help Requests  \n" +
             ".reqinfo: Information on who sent the Help Request \n" +
             ".deletereq: Delete a Help Request from the list \n" +
-            ".remindme: Set a reminder\n" +
-            ".createrole team_name #color_number: adds new role to server with discord hex color\n"+
-            ".assign @member role_name: adds a mentioned member to a specified team")
+            ".remindme: Set a reminder! \n" +
+            ".createrole team_name #color_number: adds new role to server with discord hex color! \n"+
+            ".assign @member role_name: adds a mentioned member to a specified team!")
+            
 
     }
     if (msg.content.toLowerCase().startsWith(prefix + "todo")) {

@@ -57,7 +57,7 @@ describe("Message Handler", () => {
     it("deletes a goal", async () => {
         message.content = ".rmgoal booga";
         await messageHandler(message);
-        expect(message.channel.send.mock.calls[0][0]).toBe("```yaml\nGoal has been successfully deleted! ```");
+        expect(message.channel.send.mock.calls[0]).toBe("```yaml\nGoal has been successfully deleted! ```");
         // if we are testing for channel send then replace with message.channel.send
     })
     it("github", async () => {
