@@ -94,6 +94,7 @@ const messageHandler = async (msg) => {
             ".list: View your personal To Do List! \n" +
             ".remove: Remove one of your To Do List Duties! \n" +
             ".creategoal: Create your own Personal Goal! \n" +
+            ".editgoaldesc: Edit a goal's description to your liking\n" +
             ".ls: View your List of Goals! \n" +
             ".viewgoal: View a Specific Goal and Learn more about it! \n" +
             ".rmgoal: Remove a Goal! \n" +
@@ -181,6 +182,33 @@ const messageHandler = async (msg) => {
     })
     msg.channel.send("```Goal has been created. Type '.ls' to view a list of goals.```");
     }
+        if(msg.content.toLowerCase().startsWith(prefix + "editgoaldesc")){
+        var original = msg.content;
+        var result = original.substr(original.indexOf(" ") + 1);
+        var resultSplit = result.split(" ");
+        if(resultSplit.length < 2){
+            msg.channel.send("```diff\n-ERROR! Please make sure you are entering in the correct format. '.editgoaldesc <goalname> <goal description>'. Note: Omit the <>.```")
+        }
+        else{
+            const docRef = DB.collection(msg.author.username + " Goals").doc(resultSplit[0]);
+            if(doc.exists){
+                await docRef.set({
+                    "Goal Description": result.substr(result.indexOf(" ") + 1),
+                }, {merge: true})
+                .then(() => {
+                    console.log("Document written")
+                    msg.channel.send("Goal description has successfully been updated. Please type '.viewgoal <goalname>' to view the updated goal. Note: remove the <>")
+                })
+                .catch((error) => {
+                    console.log("Error writing document: ", error)
+                })
+            }
+            else{
+                msg.channel.send("```diff\n-ERROR! Please make sure that a goal with the name specified exists.```")
+            }            
+        }
+    }
+            
     if(msg.content.toLowerCase().startsWith(prefix + "ls")){
     await DB.collection(msg.author.username + " Goals").get().then((goals) => {
         var str = '```Current List of Goals:' + "\n\n";
