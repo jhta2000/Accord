@@ -111,6 +111,7 @@ describe('Discord bot functions', ()=>{
          ".list: View your personal To Do List! \n" +
          ".remove: Remove one of your To Do List Duties! \n" +
          ".creategoal: Create your own Personal Goal! \n" +
+         ".editgoaldesc: Edit a goal's description to your liking\n" +
          ".ls: View your List of Goals! \n" +
          ".viewgoal: View a Specific Goal and Learn more about it! \n" +
          ".rmgoal: Remove a Goal! \n" +
