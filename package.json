@@ -13,7 +13,7 @@
     "octokit": "^1.7.1"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
